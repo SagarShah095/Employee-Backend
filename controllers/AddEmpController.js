@@ -2,7 +2,7 @@ const AddEmployee = require("../Models/AddEmp");
 const multer = require("multer");
 const path = require("path");
 const User = require("../Models/User");
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -54,7 +54,7 @@ const addEmployee = async (req, res) => {
     }
 
     // Password Hash
-    const hashPassword = await bcrypt.hash(Pass, 10);
+    const hashPassword = await bcryptjs.hash(Pass, 10);
 
     // Create new user for login system
     const newUser = new User({

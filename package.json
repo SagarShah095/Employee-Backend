@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "Index.js",
   "dependencies": {
-    "bcrypt": "^3.0.2",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "env": "^0.0.2",
     "express": "^5.1.0",

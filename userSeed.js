@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 const User = require("./Models/User");
 const connectToDatabase = require("./db/db");
 const { model } = require("mongoose");
@@ -6,7 +6,7 @@ const { model } = require("mongoose");
  const userRegister = async () => {
   await connectToDatabase();
   try {
-    const hashPassword = await bcrypt.hash("admin", 10);
+    const hashPassword = await bcryptjs.hash("admin", 10);
     const newUser = new User({
       name: "Admin",
       email: "admin@gmail.com",
