@@ -1,5 +1,5 @@
 const express = require("express");
-const authMiddleWare = require("../middleWare/authMiddleWare");
+const authMiddleWare = require("../middleWare/authMiddleWare.js");
 const {
   addEmployee,
   getEmployees,
