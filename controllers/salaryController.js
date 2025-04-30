@@ -1,6 +1,5 @@
-
 const Salary = require("../Models/salaryModel");
-const AddEmployee = require("../Models/AddEmp")
+const AddEmployee = require("../Models/AddEmp");
 
 // Add Salary
 exports.addSalary = async (req, res) => {
@@ -18,8 +17,16 @@ exports.addSalary = async (req, res) => {
       payDate,
     });
 
+    console.log(empId, "empId from addSalary");
+
     await newSalary.save();
-    res.status(201).json({ success: true, message: "Salary added successfully", data: newSalary});
+    res
+      .status(201)
+      .json({
+        success: true,
+        message: "Salary added successfully",
+        data: newSalary,
+      });
   } catch (error) {
     console.error("Error adding salary:", error);
     res.status(500).json({ success: false, error: "Failed to add salary" });
@@ -32,13 +39,20 @@ exports.getEmployeesByDepartment = async (req, res) => {
     const employees = await AddEmployee.find({ Department: Dept });
 
     if (!employees || employees.length === 0) {
-      return res.status(404).json({ success: false, error: "No employees found in this department" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          error: "No employees found in this department",
+        });
     }
 
     res.status(200).json({ success: true, employees });
   } catch (error) {
     console.error("Error fetching employees by department:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch employees" });
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch employees" });
   }
 };
 
@@ -46,10 +60,12 @@ exports.getEmployeesByDepartment = async (req, res) => {
 exports.getSalaryByEmployee = async (req, res) => {
   try {
     const { empId } = req.params;
-    const salary = await Salary.findOne({ empId }).populate('empId');
+    const salary = await Salary.findOne({ empId }).populate("empId");
 
     if (!salary) {
-      return res.status(404).json({ success: false, error: "Salary not found for this employee" });
+      return res
+        .status(404)
+        .json({ success: false, error: "Salary not found for this employee" });
     }
 
     res.status(200).json({ success: true, data: salary });
@@ -74,10 +90,18 @@ exports.updateSalary = async (req, res) => {
     );
 
     if (!updatedSalary) {
-      return res.status(404).json({ success: false, error: "Salary not found" });
+      return res
+        .status(404)
+        .json({ success: false, error: "Salary not found" });
     }
 
-    res.status(200).json({ success: true, message: "Salary updated successfully", data: updatedSalary });
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "Salary updated successfully",
+        data: updatedSalary,
+      });
   } catch (error) {
     console.error("Error updating salary:", error);
     res.status(500).json({ success: false, error: "Failed to update salary" });
@@ -92,10 +116,14 @@ exports.deleteSalary = async (req, res) => {
     const deletedSalary = await Salary.findOneAndDelete({ empId });
 
     if (!deletedSalary) {
-      return res.status(404).json({ success: false, error: "Salary not found" });
+      return res
+        .status(404)
+        .json({ success: false, error: "Salary not found" });
     }
 
-    res.status(200).json({ success: true, message: "Salary deleted successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Salary deleted successfully" });
   } catch (error) {
     console.error("Error deleting salary:", error);
     res.status(500).json({ success: false, error: "Failed to delete salary" });

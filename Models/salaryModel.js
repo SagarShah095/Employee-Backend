@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const salarySchema = new mongoose.Schema({
   empId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee", // Employee reference (if you have an Employee model)
+    ref: "AddEmployee", // Employee reference (if you have an Employee model)
     required: true,
   },
   basicSalary: {
