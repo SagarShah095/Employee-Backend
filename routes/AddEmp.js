@@ -1,5 +1,5 @@
 const express = require("express");
-const verifyUser = require("../middleWare/authMiddleWare.js");
+const authMiddleWare = require("../middleWare/authMiddleWare");
 const {
   addEmployee,
   getEmployees,
@@ -11,10 +11,10 @@ const {
 
 const emprouter = express.Router();
 
-emprouter.get("/", verifyUser, getEmployees);
-emprouter.post("/add", upload.single("Img"), verifyUser, addEmployee);
-emprouter.get("/:id", verifyUser, getEmployee);
-emprouter.put("/:id", verifyUser, updateEmployee);
-emprouter.delete("/:id", verifyUser, deleteEmployee);
+emprouter.get("/", authMiddleWare, getEmployees);
+emprouter.post("/add", upload.single("Img"), authMiddleWare, addEmployee);
+emprouter.get("/:id", authMiddleWare, getEmployee);
+emprouter.put("/:id", authMiddleWare, updateEmployee);
+emprouter.delete("/:id", authMiddleWare, deleteEmployee);
 
 module.exports = emprouter;
