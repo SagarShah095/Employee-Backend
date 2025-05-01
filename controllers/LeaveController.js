@@ -58,7 +58,7 @@ exports.getLeave = async (req, res) => {
 
 exports.putLeave = async (req, res) => {
   try {
-    const Id = req.params.id;
+    const Id = req.params.Id;
     const { status } = req.body;
 
     const leave = await Leave.findByIdAndUpdate(
@@ -66,6 +66,9 @@ exports.putLeave = async (req, res) => {
       { status },
       { new: true } // returns the updated document
     );
+
+    console.log(Id, "Id");
+    console.log(status, "status");
 
     if (!leave) {
       return res.status(404).json({ success: false, error: "Leave not found" });
