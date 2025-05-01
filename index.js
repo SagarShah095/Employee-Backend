@@ -6,6 +6,7 @@ const departmentRoutes = require("./routes/department");
 const connectToDatabase = require("./db/db");
 const AddEmp = require("./routes/AddEmp");
 const salaryRouter = require("./routes/salaryRouter")
+const leaveRouter = require("./routes/Leaveroute");
 
 
 connectToDatabase();
@@ -17,6 +18,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/department", departmentRoutes);
 app.use("/api/employee", AddEmp);
 app.use("/api/salary", salaryRouter);
+app.use("/api/leave", leaveRouter);
 userRegister();
 app.listen(5000, () => {
   console.log(`Server is running on Port 5000`);
