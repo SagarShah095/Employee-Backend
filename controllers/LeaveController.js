@@ -3,16 +3,16 @@ const AddEmployee = require("../Models/AddEmp");
 
 exports.addLeave = async (req, res) => {
   try {
-    const { empId, emp_name, leavetype, fromDate, toDate } = req.body;
+    const { emp_id, emp_name, leavetype, fromDate, toDate } = req.body;
 
-    if (!empId) {
+    if (!emp_id) {
       return res.status(400).json({
         success: false,
         error: "Employee ID is required",
       });
     }
-    console.log(empId, "empId from leave add");
-    const existingLeave = await Leave.findOne({ empId, fromDate, toDate });
+    console.log(emp_id, "emp_id from leave add");
+    const existingLeave = await Leave.findOne({ emp_id, fromDate, toDate });
     if (existingLeave) {
       return res.status(400).json({
         success: false,
@@ -22,7 +22,7 @@ exports.addLeave = async (req, res) => {
     }
 
     const newLeave = new Leave({
-      empId,
+      emp_id,
       emp_name,
       leavetype,
       fromDate,

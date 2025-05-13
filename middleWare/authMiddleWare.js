@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../Models/User");
+const AddEmployee = require("../Models/AddEmp");
 
 const verifyUser = async (req, res, next) => {
   try {
@@ -34,4 +35,26 @@ const verifyUser = async (req, res, next) => {
   }
 };
 
-module.exports = verifyUser;
+const verifyUserFromEmployee = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token, "ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+
+    const employee = await AddEmployee.findById(decoded._id);
+    if (!employee) {
+      return res.status(401).json({ success: false, message: "Employee not found" });
+    }
+
+    req.user = employee;
+    next();
+  } catch (error) {
+    console.error("Employee token verification failed", error);
+    return res.status(401).json({ success: false, message: "Invalid token" });
+  }
+};
+
+module.exports = { verifyUser, verifyUserFromEmployee };

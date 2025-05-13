@@ -1,15 +1,19 @@
 const Salary = require("../Models/salaryModel");
 const AddEmployee = require("../Models/AddEmp");
+const { default: mongoose } = require("mongoose");
 
 // Add Salary
 exports.addSalary = async (req, res) => {
   try {
-    const { empId, basicSalary, allowances, deductions, payDate } = req.body;
+    const {mainEmpId, dept, emp_name, empId, basicSalary, allowances, deductions, payDate } = req.body;
 
     const totalSalary = basicSalary + allowances - deductions;
 
     const newSalary = new Salary({
       empId,
+      mainEmpId,
+      emp_name,
+      dept,
       basicSalary,
       allowances,
       deductions,
@@ -37,8 +41,9 @@ exports.getEmployeesByDepartment = async (req, res) => {
   try {
     const { Dept } = req.params;
     const employees = await AddEmployee.find({ Department: Dept });
+    console.log(employees,"employeesemployees")
 
-    if (!employees || employees.length === 0) {
+    if (!employees) {
       return res
         .status(404)
         .json({
@@ -60,6 +65,7 @@ exports.getEmployeesByDepartment = async (req, res) => {
 exports.getSalaryByEmployee = async (req, res) => {
   try {
     const { empId } = req.params;
+    console.log("Salary empid: ", empId)
     const salary = await Salary.findOne({ empId }).populate("empId");
 
     if (!salary) {
@@ -74,6 +80,24 @@ exports.getSalaryByEmployee = async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to fetch salary" });
   }
 };
+
+
+exports.SalaryAllData = async (req, res) => {
+  try {
+    const salaries = await Salary.find({});
+    res.status(200).json({
+      success: true,
+      data: salaries,
+    });
+  } catch (error) {
+    console.error("Error fetching salaries:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server Error",
+    });
+  }
+};
+
 
 // Update Salary by Employee ID
 exports.updateSalary = async (req, res) => {

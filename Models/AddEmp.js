@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const AddEmployeSchema = new mongoose.Schema({
-  emp_name: { type: String, required: true },
+  emp_name: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   emp_id: { type: String, required: true, unique: true },
   dob: { type: Date, required: true },
@@ -28,6 +28,12 @@ const AddEmployeSchema = new mongoose.Schema({
     enum: ["Developer", "Designer", "HR"],
     required: true,
   },
+  empRole: {
+    type: String,
+    enum: ["admin", "employee"],
+    default: "employee",
+  },
+  employeeInfo: { type: mongoose.Schema.Types.ObjectId },
   Img: {
     type: String,
     required: true,

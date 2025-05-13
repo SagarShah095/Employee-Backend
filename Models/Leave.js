@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const LeaveSchema = new mongoose.Schema({
-    empId: { type: String, required: true }, // ✅ correct
+    emp_id: { type: String, required: true }, // ✅ correct 
     emp_name: { type: String, required: true },
     leavetype: {
       type: String,

@@ -1,13 +1,21 @@
 const mongoose = require("mongoose");
+const Salary = require("./salaryModel");
 
 const UserSchema = new mongoose.Schema({
-  name: { type: String, require: true },
-  email: { type: String, require: true },
-  password: { type: String, require: true },
-  role: { type: String, enum: ["admin", "employee"], require: true },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  password: { type: String, required: true },
+  role: {
+    type: String,
+    enum: ["admin", "employee"],
+    required: true,
+    default: "employee",
+  },
+  salary: { type: mongoose.Schema.Types.ObjectId, ref: "Salary" },
   profileImage: { type: String },
+  employeeInfo: { type: mongoose.Schema.Types.ObjectId, ref: "AddEmployee" },
   createAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
-      
+
 module.exports = mongoose.model("User", UserSchema);

@@ -3,6 +3,7 @@ const multer = require("multer");
 const path = require("path");
 const User = require("../Models/User");
 const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -27,6 +28,52 @@ const getEmployees = async (req, res) => {
     });
   }
 };
+
+const changePassword = async (req, res) => {
+  const {currentPassword, newPassword } = req.body;
+  const { id } = req.params;
+
+  try {
+    if ( !currentPassword || !newPassword) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    console.log("EmpID Received:", id);
+
+    const user = await AddEmployee.findOne({_id: id});
+
+    console.log("User found:", user);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not linked to this employee" });
+    }
+
+    console.log("User found:", user);
+
+    const isMatch = await bcryptjs.compare(currentPassword, user.Pass);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Current password is incorrect" });
+    }
+
+    const hashedPassword = await bcryptjs.hash(newPassword, 10);
+    user.Pass = hashedPassword;
+    await user.save();
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    console.error("Change Password Error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
 
 const addEmployee = async (req, res) => {
   try {
@@ -84,6 +131,8 @@ const addEmployee = async (req, res) => {
     });
 
     await newEmp.save();
+    newUser.employeeInfo = newEmp._id;
+    await newUser.save();
 
     return res.status(201).json({
       success: true,
@@ -103,15 +152,17 @@ const addEmployee = async (req, res) => {
 const getEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const emp = await AddEmployee.findById({ _id: id });
+    const emp = await AddEmployee.findById(id);
     return res.status(200).json({
       success: true,
       emp,
     });
   } catch (error) {
+    console.error("Error in getEmployee:", error); // helpful for debugging
     return res.status(500).json({
       success: false,
       message: "Get Employee server error",
+      error: error.message,
     });
   }
 };
@@ -119,10 +170,10 @@ const getEmployee = async (req, res) => {
 const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { emp_name, Mrd, Des, Dept, Salary } = req.body;
     const updateEmp = await AddEmployee.findByIdAndUpdate(
-      { _id: id },
-      { ...req.body }
+      id,
+      { ...req.body },
+      { new: true } // returns the updated document
     );
     return res.status(200).json({
       success: true,
@@ -153,11 +204,78 @@ const deleteEmployee = async (req, res) => {
   }
 };
 
+const empCount = async (req, res) => {
+  try {
+    const total = await AddEmployee.countDocuments({});
+    res.status(200).json({ success: true, count: total });
+  } catch (error) {
+    console.error("Error counting employees:", error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+const EmployeeLogin = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await AddEmployee.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+    const isMatch = await bcryptjs.compare(password, user.Pass);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid credentials" });
+    }
+    const token = jwt.sign(
+      { _id: user._id, role: user.empRole },
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      { expiresIn: "20d" }
+    );
+    res.status(200).json({
+      success: true,
+      token,
+      user: {
+        _id: user.id,
+        name: user.name,
+        role: user.empRole,
+        profileImage: user.profileImage,
+      },
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const empverify = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log("ID:", id);
+    const employee = await AddEmployee.findById(id);
+    if (!employee) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Employee not found" });
+    }
+
+    res.json({ success: true, user: employee });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
 module.exports = {
   getEmployees,
   addEmployee,
   getEmployee,
   updateEmployee,
   deleteEmployee,
+  empCount,
   upload,
+  changePassword,
+  EmployeeLogin,
+  empverify,
 };

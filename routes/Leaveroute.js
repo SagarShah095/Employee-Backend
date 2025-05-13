@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authMiddleWare = require("../middleWare/authMiddleWare");
+const {verifyUser} = require("../middleWare/authMiddleWare");
 const {
   addLeave,
   getLeave,
@@ -8,10 +8,9 @@ const {
   getData,
 } = require("../controllers/LeaveController");
 
-router.get("/", authMiddleWare, getLeave);
-router.post("/add", authMiddleWare, addLeave);
-router.put("/:Id", authMiddleWare, putLeave);
-router.get("/:Id", authMiddleWare, getData);
+router.get("/", getLeave);
+router.post("/add", addLeave);
+router.put("/:Id", putLeave);
+router.get("/:Id", getData);
 
 module.exports = router;
-    

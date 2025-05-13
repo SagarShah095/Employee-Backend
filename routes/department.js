@@ -1,14 +1,14 @@
 const express = require("express");
-const authMiddedleWare = require("../middleWare/authMiddleWare.js");
+const {verifyUser} = require("../middleWare/authMiddleWare.js");
 const { addDepartment, getDepartments, getDepartment, updateDepartment, deleteDepartment } = require("../controllers/DepartmentController");
 
 const router = express.Router();
 
-router.get("/", authMiddedleWare, getDepartments);
-router.post("/add", authMiddedleWare, addDepartment);
-router.get("/:id", authMiddedleWare, getDepartment);
-router.put("/:id", authMiddedleWare, updateDepartment);
-router.delete("/:id", authMiddedleWare, deleteDepartment);
+router.get("/", verifyUser, getDepartments);
+router.post("/add", verifyUser, addDepartment);
+router.get("/:id", verifyUser, getDepartment);
+router.put("/:id", verifyUser, updateDepartment);
+router.delete("/:id", verifyUser, deleteDepartment);
 
 
 

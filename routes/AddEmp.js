@@ -1,5 +1,10 @@
 const express = require("express");
-const authMiddleWare = require("../middleWare/authMiddleWare.js");
+const {
+  verifyUser,
+  verifyUserFromEmployee,
+} = require("../middleWare/authMiddleWare.js");
+const { verify } = require("../controllers/authController");
+const employeeAuth = require("../middleWare/employeeAuth.js");
 const {
   addEmployee,
   getEmployees,
@@ -7,14 +12,22 @@ const {
   updateEmployee,
   deleteEmployee,
   upload,
+  empCount,
+  changePassword,
+  EmployeeLogin,
+  empverify,
 } = require("../controllers/AddEmpController");
 
 const emprouter = express.Router();
 
-emprouter.get("/", authMiddleWare, getEmployees);
-emprouter.post("/add", upload.single("Img"), authMiddleWare, addEmployee);
-emprouter.get("/:id", authMiddleWare, getEmployee);
-emprouter.put("/:id", authMiddleWare, updateEmployee);
-emprouter.delete("/:id", authMiddleWare, deleteEmployee);
+emprouter.get("/", getEmployees);
+emprouter.post("/add", upload.single("Img"), addEmployee);
+emprouter.get("/count", empCount);
+emprouter.get("/:id", getEmployee);
+emprouter.put("/change-password/:id", changePassword);
+emprouter.put("/:id", updateEmployee);
+emprouter.delete("/:id", deleteEmployee);
+emprouter.post("/EmpLogin", EmployeeLogin);
+emprouter.get("/verify/:id", empverify);
 
 module.exports = emprouter;

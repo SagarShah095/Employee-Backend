@@ -1,24 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const salaryController = require("../controllers/salaryController");
-const authMiddleWare = require("../middleWare/authMiddleWare");
-const { addSalary, getSalaryByEmployee } = require("../controllers/salaryController");
+const { verifyUser } = require("../middleWare/authMiddleWare");
+const {
+  addSalary,
+  getSalaryByEmployee,
+  SalaryAllData,
+} = require("../controllers/salaryController");
 
-router.post("/add", authMiddleWare, addSalary);
+router.post("/add", verifyUser, addSalary);
 
-router.get(
-  "/employee/:empId",authMiddleWare, 
-  getSalaryByEmployee
-);
+router.get("/employee/:empId", verifyUser, getSalaryByEmployee);
 
-router.put("/update/:empId", authMiddleWare, salaryController.updateSalary);
+router.put("/update/:empId", verifyUser, salaryController.updateSalary);
 
-router.delete("/delete/:empId", authMiddleWare, salaryController.deleteSalary);
+router.delete("/delete/:empId", verifyUser, salaryController.deleteSalary);
 
-router.get(
-  "/department/:deptName",
-  authMiddleWare,
-  salaryController.getEmployeesByDepartment
-);
+router.get("/department/:deptName", verifyUser , salaryController.getEmployeesByDepartment);
+router.get("/", salaryController.SalaryAllData);
 
 module.exports = router;
