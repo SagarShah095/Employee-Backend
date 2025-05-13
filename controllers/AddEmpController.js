@@ -4,6 +4,8 @@ const path = require("path");
 const User = require("../Models/User");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -125,7 +127,7 @@ const addEmployee = async (req, res) => {
       Des,
       Dept,
       Salary,
-      Pass: hashPassword, // save hashed password
+      Pass: hashPassword,
       Role,
       Img: req.file ? req.file.filename : "",
     });
@@ -134,11 +136,44 @@ const addEmployee = async (req, res) => {
     newUser.employeeInfo = newEmp._id;
     await newUser.save();
 
+    // Nodemailer setup
+    const transporter = nodemailer.createTransport({
+      service: 'Gmail',
+      auth: {
+        user: 'yourcompanyemail@example.com',
+        pass: 'yourapppassword',
+      },
+    });
+
+    // Compose email
+    const mailOptions = {
+      from: 'yourcompanyemail@example.com',
+      to: email,
+      subject: 'Welcome to the Company!',
+      html: `
+        <h3>Welcome, ${emp_name}!</h3>
+        <p>Your account has been created successfully.</p>
+        <p><strong>Employee ID:</strong> ${emp_id}</p>
+        <p><strong>Role:</strong> ${Role}</p>
+        <p>You can now login to your account using your email and the password you provided.</p>
+      `,
+    };
+
+    // Send email
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error sending email:", error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
     return res.status(201).json({
       success: true,
       message: "Employee added successfully",
       data: newEmp,
     });
+
   } catch (error) {
     console.error("Error adding employee:", error);
     return res.status(500).json({
@@ -148,6 +183,7 @@ const addEmployee = async (req, res) => {
     });
   }
 };
+
 
 const getEmployee = async (req, res) => {
   try {
