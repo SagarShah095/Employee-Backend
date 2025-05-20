@@ -1,16 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const {verifyUser} = require("../middleWare/authMiddleWare");
-const {
-  addLeave,
-  getLeave,
-  putLeave,
-  getData,
-} = require("../controllers/LeaveController");
+const {PunchPost} = require("../controllers/EmpPunch")
 
-router.get("/", getLeave);
-router.post("/add", addLeave);
-router.put("/:Id", putLeave);
-router.get("/:Id", getData);
+// router.get("/", getLeave);
+router.post("/add", PunchPost);
+// router.put("/:Id", putLeave);
+// router.get("/:Id", getData);
 
 module.exports = router;

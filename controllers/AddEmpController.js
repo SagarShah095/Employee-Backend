@@ -93,19 +93,32 @@ const addEmployee = async (req, res) => {
       Role,
     } = req.body;
 
-    // Check if user already exists
+    // Check for existing user (login system)
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
         success: false,
-        message: "User already exists",
+        message: "Email is already registered in login system",
       });
     }
 
-    // Password Hash
+    // Check for existing employee by email or emp_id
+    const employeeExists = await AddEmployee.findOne({
+      $or: [{ email }, { emp_id }],
+    });
+    if (employeeExists) {
+      return res.status(400).json({
+        success: false,
+        message: employeeExists.email === email
+          ? "Employee with this email already exists"
+          : "Employee ID already in use",
+      });
+    }
+
+    // Hash password
     const hashPassword = await bcryptjs.hash(Pass, 10);
 
-    // Create new user for login system
+    // Create new user (login)
     const newUser = new User({
       name: emp_name,
       email,
@@ -113,7 +126,6 @@ const addEmployee = async (req, res) => {
       Role,
       profileImage: req.file ? req.file.filename : null,
     });
-
     await newUser.save();
 
     // Create new employee entry
@@ -131,49 +143,19 @@ const addEmployee = async (req, res) => {
       Role,
       Img: req.file ? req.file.filename : "",
     });
-
     await newEmp.save();
+
     newUser.employeeInfo = newEmp._id;
     await newUser.save();
 
-    // Nodemailer setup
-    const transporter = nodemailer.createTransport({
-      service: 'Gmail',
-      auth: {
-        user: 'yourcompanyemail@example.com',
-        pass: 'yourapppassword',
-      },
-    });
-
-    // Compose email
-    const mailOptions = {
-      from: 'yourcompanyemail@example.com',
-      to: email,
-      subject: 'Welcome to the Company!',
-      html: `
-        <h3>Welcome, ${emp_name}!</h3>
-        <p>Your account has been created successfully.</p>
-        <p><strong>Employee ID:</strong> ${emp_id}</p>
-        <p><strong>Role:</strong> ${Role}</p>
-        <p>You can now login to your account using your email and the password you provided.</p>
-      `,
-    };
-
-    // Send email
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error sending email:", error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
+    // Email (optional)
+    // ... (nodemailer code)
 
     return res.status(201).json({
       success: true,
       message: "Employee added successfully",
       data: newEmp,
     });
-
   } catch (error) {
     console.error("Error adding employee:", error);
     return res.status(500).json({
@@ -183,6 +165,7 @@ const addEmployee = async (req, res) => {
     });
   }
 };
+
 
 
 const getEmployee = async (req, res) => {
@@ -225,7 +208,7 @@ const updateEmployee = async (req, res) => {
 };
 
 const deleteEmployee = async (req, res) => {
-  try {
+  try { 
     const { id } = req.params;
     await AddEmployee.findByIdAndDelete({ _id: id });
     return res.status(200).json({
