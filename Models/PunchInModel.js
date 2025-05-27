@@ -1,22 +1,11 @@
 const mongoose = require("mongoose");
 
-const PunchSchema = new mongoose.Schema({
-    emp_id: { type: String, required: true }, // ✅ correct 
-    emp_name: { type: String, required: true },
-    PunchIn: {
-      type: String,
-    //   enum: ["Sick", "Casual", "Annual"],
-      required: true,
-    },
-    PunchOut: {
-      type: String,
-    //   enum: ["Sick", "Casual", "Annual"],
-      required: true,
-    },
+const punchSchema = new mongoose.Schema({
+  emp_id: { type: String, required: true },
+  emp_name: { type: String, required: true },
+  PunchIn: { type: Date, required: true },
+  PunchOut: { type: Date, default: null },
+  status: { type: String, default: "Present" },
+}, { timestamps: true });
 
-  });
-  
-
-const Punch = mongoose.model("Punch", PunchSchema);
-
-module.exports = Punch;
+module.exports = mongoose.model("Punch", punchSchema);
