@@ -1,6 +1,7 @@
 // routes/punchRoutes.js
 const express = require("express");
 const router = express.Router();
+const Punch = require("../Models/PunchInModel")
 const {
   PunchPost,
   PunchOut,
