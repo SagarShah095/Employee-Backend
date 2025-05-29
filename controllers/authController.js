@@ -11,7 +11,6 @@ const login = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    console.log(user, "user in login controller");
     const isMatch = await bcryptjs.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -48,7 +47,6 @@ const changePassword = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Employee not found" });
     }
-    console.log(user, "user in change password");
 
     const isMatch = await bcryptjs.compare(currentPassword, user.Pass);
     if (!isMatch) {
@@ -63,7 +61,6 @@ const changePassword = async (req, res) => {
 
     user.password = hashedPassword;
     await user.save();
-    console.log(user, "user in after change password");
 
     return res
       .status(200)

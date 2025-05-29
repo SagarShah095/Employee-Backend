@@ -1,26 +1,27 @@
-// routes/punchRoutes.js
 const express = require("express");
 const router = express.Router();
-const Punch = require("../Models/PunchInModel")
 const {
   PunchPost,
   PunchOut,
   PunchGet,
   getTodayAttendanceSummary,
+  getLatestPunchByEmpId
 } = require("../controllers/EmpPunch");
 
-router.post("/add", PunchPost);          // Punch In
-router.post("/out", PunchOut);           // Punch Out
-router.get("/", PunchGet);               // All punches
+// POST - Punch In
+router.post("/add", PunchPost);
+
+// POST - Punch Out
+router.post("/out", PunchOut);
+
+// GET - All Punches
+router.get("/", PunchGet);
+// router.get("/status/:emp_id", getPunchStatu)
+
+// GET - Attendance Summary
 router.get("/attendance-summary", getTodayAttendanceSummary);
 
-router.get("/latest/:emp_id", async (req, res) => {
-  try {
-    const latestPunch = await Punch.findOne({ emp_id: req.params.emp_id }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, punch: latestPunch });
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Error getting punch", error });
-  }
-});
+// GET - Latest punch for specific employee
+router.get("/latest/:emp_id", getLatestPunchByEmpId);
 
 module.exports = router;

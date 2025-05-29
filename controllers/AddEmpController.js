@@ -20,7 +20,6 @@ const upload = multer({ storage: storage });
 
 const getEmployees = async (req, res) => {
   try {
-    console.log("Get Employees");
     const Emp = await AddEmployee.find();
     return res.status(200).json({ success: true, Emp });
   } catch (error) {
@@ -42,18 +41,15 @@ const changePassword = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
-    console.log("EmpID Received:", id);
 
     const user = await AddEmployee.findOne({_id: id});
 
-    console.log("User found:", user);
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not linked to this employee" });
     }
 
-    console.log("User found:", user);
 
     const isMatch = await bcryptjs.compare(currentPassword, user.Pass);
     if (!isMatch) {
@@ -272,7 +268,6 @@ const EmployeeLogin = async (req, res) => {
 const empverify = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("ID:", id);
     const employee = await AddEmployee.findById(id);
     if (!employee) {
       return res

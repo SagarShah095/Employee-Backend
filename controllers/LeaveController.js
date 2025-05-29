@@ -11,7 +11,6 @@ exports.addLeave = async (req, res) => {
         error: "Employee ID is required",
       });
     }
-    console.log(emp_id, "emp_id from leave add");
     const existingLeave = await Leave.findOne({ emp_id, fromDate, toDate });
     if (existingLeave) {
       return res.status(400).json({
@@ -67,8 +66,6 @@ exports.putLeave = async (req, res) => {
       { new: true } // returns the updated document
     );
 
-    console.log(Id, "Id");
-    console.log(status, "status");
 
     if (!leave) {
       return res.status(404).json({ success: false, error: "Leave not found" });

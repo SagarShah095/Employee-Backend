@@ -21,7 +21,6 @@ exports.addSalary = async (req, res) => {
       payDate,
     });
 
-    console.log(empId, "empId from addSalary");
 
     await newSalary.save();
     res
@@ -41,7 +40,6 @@ exports.getEmployeesByDepartment = async (req, res) => {
   try {
     const { Dept } = req.params;
     const employees = await AddEmployee.find({ Department: Dept });
-    console.log(employees,"employeesemployees")
 
     if (!employees) {
       return res
@@ -65,7 +63,6 @@ exports.getEmployeesByDepartment = async (req, res) => {
 exports.getSalaryByEmployee = async (req, res) => {
   try {
     const { empId } = req.params;
-    console.log("Salary empid: ", empId)
     const salary = await Salary.findOne({ empId }).populate("empId");
 
     if (!salary) {
