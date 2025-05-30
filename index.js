@@ -14,12 +14,20 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://employee-frontend-i28v.onrender.com",
+    origin: "https://employee-frontend-i28v.onrender.com/",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+// app.use(
+//   cors({
+//     origin: "*",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 app.use(express.json());
 app.use(express.static("public/uploads"));
 app.use("/api/auth", authRoutes);

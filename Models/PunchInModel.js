@@ -6,6 +6,8 @@ const punchSchema = new mongoose.Schema(
     emp_name: { type: String, required: true },
     PunchIn: { type: Date, required: true },
     PunchOut: { type: Date, default: null },
+    LunchStart: { type: Date, default: null },
+    LunchEnd: { type: Date, default: null },
     status: { type: String, default: "Present" },
     lockUntil: { type: Date },
   },

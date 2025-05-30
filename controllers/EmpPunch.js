@@ -1,89 +1,88 @@
 const Punch = require("../Models/PunchInModel");
-exports.PunchPost = async (req, res) => {
-  try {
-    const { emp_id, emp_name } = req.body;
+// exports.PunchPost = async (req, res) => {
+//   try {
+//     const { emp_id, emp_name } = req.body;
 
-    const now = new Date(); // get current timestamp
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+//     const now = new Date();
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
 
-    // Check if already punched in today
-    const existingPunch = await Punch.findOne({
-      emp_id,
-      PunchIn: { $gte: todayStart, $lte: todayEnd },
-    });
+//     // Check if already punched in today
+//     const existingPunch = await Punch.findOne({
+//       emp_id,
+//       PunchIn: { $gte: todayStart, $lte: todayEnd },
+//     });
 
-    if (existingPunch) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Already punched in today." });
-    }
+//     if (existingPunch) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Already punched in today." });
+//     }
 
-    const punch = new Punch({
-      emp_id,
-      emp_name,
-      PunchIn: now, // Store exact time
-    });
-    await punch.save();
+//     const punch = new Punch({
+//       emp_id,
+//       emp_name,
+//       PunchIn: now, // Store exact time
+//     });
+//     await punch.save();
 
-    res
-      .status(200)
-      .json({ success: true, message: "Punch-in recorded", data: punch });
-  } catch (error) {
-    console.error("Punch-in error:", error);
-    res.status(500).json({ success: false, message: "Failed to punch in" });
-  }
-};
+//     res
+//       .status(200)
+//       .json({ success: true, message: "Punch-in recorded", data: punch });
+//   } catch (error) {
+//     console.error("Punch-in error:", error);
+//     res.status(500).json({ success: false, message: "Failed to punch in" });
+//   }
+// };
 
-exports.PunchOut = async (req, res) => {
-  try {
-    const { emp_id } = req.body;
+// exports.PunchOut = async (req, res) => {
+//   try {
+//     const { emp_id } = req.body;
 
-    const now = new Date();
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayEnd = new Date();
-    todayEnd.setHours(23, 59, 59, 999);
+//     const now = new Date();
+//     const todayStart = new Date();
+//     todayStart.setHours(0, 0, 0, 0);
+//     const todayEnd = new Date();
+//     todayEnd.setHours(23, 59, 59, 999);
 
-    // 🔍 Find today's punch where PunchOut is null
-    const punch = await Punch.findOne({
-      emp_id,
-      PunchIn: { $gte: todayStart, $lte: todayEnd },
-      PunchOut: null,
-    });
+//     // 🔍 Find today's punch where PunchOut is null
+//     const punch = await Punch.findOne({
+//       emp_id,
+//       PunchIn: { $gte: todayStart, $lte: todayEnd },
+//       PunchOut: null,
+//     });
 
-    if (!punch) {
-      return res.status(404).json({
-        success: false,
-        message: "No active punch-in found for today.",
-      });
-    }
+//     if (!punch) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "No active punch-in found for today.",
+//       });
+//     }
 
-    // 🔒 Check if lockUntil exists and is still active
-    if (punch.lockUntil && now < punch.lockUntil) {
-      return res.status(403).json({
-        success: false,
-        message: `Punch out is locked until ${punch.lockUntil.toLocaleString()}.`,
-      });
-    }
+//     // 🔒 Check if lockUntil exists and is still active
+//     if (punch.lockUntil && now < punch.lockUntil) {
+//       return res.status(403).json({
+//         success: false,
+//         message: `Punch out is locked until ${punch.lockUntil.toLocaleString()}.`,
+//       });
+//     }
 
-    punch.PunchOut = now;
-    punch.lockUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 🔐 12 hours lock
-    await punch.save();
+//     punch.PunchOut = now;
+//     punch.lockUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000); // 🔐 12 hours lock
+//     await punch.save();
 
-    res.status(200).json({
-      success: true,
-      message: "Punch-out recorded and locked for 12 hours.",
-      data: punch,
-    });
-  } catch (error) {
-    console.error("Punch-out error:", error);
-    res.status(500).json({ success: false, message: "Failed to punch out" });
-  }
-};
-
+//     res.status(200).json({
+//       success: true,
+//       message: "Punch-out recorded and locked for 12 hours.",
+//       data: punch,
+//     });
+//   } catch (error) {
+//     console.error("Punch-out error:", error);
+//     res.status(500).json({ success: false, message: "Failed to punch out" });
+//   }
+// };
 
 // 👀 Get All Punches
 exports.PunchGet = async (req, res) => {
@@ -150,6 +149,215 @@ exports.getLatestPunchByEmpId = async (req, res) => {
       success: true,
       punch,
       alreadyPunchedToday,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.PunchPost = async (req, res) => {
+  try {
+    const { emp_id, emp_name } = req.body;
+    const now = new Date();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const existingPunch = await Punch.findOne({
+      emp_id,
+      PunchIn: { $gte: todayStart, $lte: todayEnd },
+    });
+
+    if (existingPunch) {
+      return res.status(400).json({
+        success: false,
+        message: "Already punched in today.",
+      });
+    }
+
+    const punch = new Punch({ emp_id, emp_name, PunchIn: now });
+    await punch.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Punch-in recorded",
+      data: {
+        punchInTime: punch.PunchIn,
+        lunchStartTime: null,
+        lunchEndTime: null,
+        punchOutTime: null,
+        state: "punched_in",
+      },
+    });
+  } catch (error) {
+    console.error("Punch-in error:", error);
+    res.status(500).json({ success: false, message: "Failed to punch in" });
+  }
+};
+
+exports.lunchStart = async (req, res) => {
+  try {
+    const { emp_id } = req.body;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const punch = await Punch.findOne({
+      emp_id,
+      PunchIn: { $gte: todayStart, $lte: todayEnd },
+      PunchOut: null,
+    });
+
+    if (!punch)
+      return res
+        .status(404)
+        .json({ success: false, message: "No active punch-in." });
+    if (punch.LunchStart)
+      return res
+        .status(400)
+        .json({ success: false, message: "Lunch already started." });
+
+    punch.LunchStart = new Date();
+    await punch.save();
+    res.status(200).json({
+      success: true,
+      message: "Lunch started",
+      data: {
+        lunchStartTime: punch.LunchStart,
+        state: "lunch_in",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.lunchEnd = async (req, res) => {
+  try {
+    const { emp_id } = req.body;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const punch = await Punch.findOne({
+      emp_id,
+      PunchIn: { $gte: todayStart, $lte: todayEnd },
+      PunchOut: null,
+      LunchStart: { $ne: null },
+    });
+
+    if (!punch)
+      return res
+        .status(404)
+        .json({ success: false, message: "No active lunch found." });
+    if (punch.LunchEnd)
+      return res
+        .status(400)
+        .json({ success: false, message: "Lunch already ended." });
+
+    punch.LunchEnd = new Date();
+    await punch.save();
+    res.status(200).json({
+      success: true,
+      message: "Lunch ended",
+      data: {
+        lunchEndTime: punch.LunchEnd,
+        state: "lunch_out",
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+exports.PunchOut = async (req, res) => {
+  try {
+    const { emp_id } = req.body;
+    const now = new Date();
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const punch = await Punch.findOne({
+      emp_id,
+      PunchIn: { $gte: todayStart, $lte: todayEnd },
+      PunchOut: null,
+    });
+
+    if (!punch)
+      return res.status(404).json({
+        success: false,
+        message: "No active punch-in found for today.",
+      });
+
+    if (punch.lockUntil && now < punch.lockUntil) {
+      return res.status(403).json({
+        success: false,
+        message: `Punch out is locked until ${punch.lockUntil.toLocaleString()}.`,
+      });
+    }
+
+    punch.PunchOut = now;
+    punch.lockUntil = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    await punch.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Punch-out recorded",
+      data: {
+        punchOutTime: punch.PunchOut,
+        state: "punched_out",
+      },
+    });
+  } catch (error) {
+    console.error("Punch-out error:", error);
+    res.status(500).json({ success: false, message: "Failed to punch out" });
+  }
+};
+
+exports.getCurrentPunchState = async (req, res) => {
+  try {
+    const emp_id = req.params.emp_id;
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const punch = await Punch.findOne({
+      emp_id,
+      PunchIn: { $gte: todayStart, $lte: todayEnd },
+    }).sort({ PunchIn: -1 });
+
+    let state = "not_punched_in"; // default state
+    let data = null;
+
+    if (punch) {
+      data = {
+        punchInTime: punch.PunchIn,
+        lunchStartTime: punch.LunchStart,
+        lunchEndTime: punch.LunchEnd,
+        punchOutTime: punch.PunchOut,
+      };
+
+      if (!punch.LunchStart) {
+        state = "punched_in"; // Show Lunch In button
+      } else if (punch.LunchStart && !punch.LunchEnd) {
+        state = "lunch_in"; // Show Lunch Out button
+      } else if (punch.LunchStart && punch.LunchEnd && !punch.PunchOut) {
+        state = "lunch_out"; // Show Punch Out button
+      } else if (punch.PunchOut) {
+        state = "punched_out"; // All done
+      }
+    }
+
+    return res.status(200).json({
+      success: true,
+      state,
+      data,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
