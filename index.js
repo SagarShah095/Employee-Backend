@@ -67,7 +67,7 @@ app.use("/api/salary", salaryRouter);
 app.use("/api/leave", leaveRouter);
 app.use("/api/punch", punchRouter);
 app.use("/api/projects", projectRouter);
-app.use("/api/notification", notificationRouter);
+app.use("/api/notifications", notificationRouter);
 
 userRegister();
 app.listen(4000, () => {

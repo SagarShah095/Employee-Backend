@@ -1,18 +1,18 @@
 const express = require("express");
 const NotificationModel = require("../Models/NotificationModel");
+const {
+  getNotification,
+  markAllRead,
+  unreadCount,
+  singleRead,
+} = require("../controllers/NotificationController");
 const router = express.Router();
 
+router.get("/:userId", getNotification);
 
-// Get notifications for a user
-router.get("/:userId", async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const notifications = await NotificationModel.find({ userId }).sort({ createdAt: -1 });
-    res.status(200).json(notifications);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch notifications" });
-  }
-});
+router.put("/mark-all-read/:userId", markAllRead);
 
+router.get("/unread-count/:userId", unreadCount);
+
+router.put("/mark-read/:notificationId", singleRead);
 module.exports = router;
