@@ -18,8 +18,8 @@ exports.markAllRead = async (req, res) => {
   try {
     const { userId } = req.params;
     const result = await NotificationModel.updateMany(
-      { userId, read: false }, // 👈 Correct field
-      { $set: { read: true } } // 👈 Correct field
+      { userId, read: false },
+      { $set: { read: true } }
     );
     res.status(200).json({
       message: "All notifications marked as read.",
@@ -30,10 +30,8 @@ exports.markAllRead = async (req, res) => {
   }
 };
 
-
 exports.unreadCount = async (req, res) => {
-    
- try {
+  try {
     const { userId } = req.params;
     const count = await NotificationModel.countDocuments({
       userId,
@@ -43,9 +41,9 @@ exports.unreadCount = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to get unread count." });
   }
-}
+};
 
- exports.singleRead = async (req, res) => {
+exports.singleRead = async (req, res) => {
   try {
     const { notificationId } = req.params;
     const result = await NotificationModel.findByIdAndUpdate(
@@ -62,4 +60,4 @@ exports.unreadCount = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to mark notification as read" });
   }
-}
+};

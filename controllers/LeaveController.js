@@ -3,7 +3,7 @@ const AddEmployee = require("../Models/AddEmp");
 
 exports.addLeave = async (req, res) => {
   try {
-    const { emp_id, emp_name, leavetype, fromDate, toDate } = req.body;
+    const { emp_id, emp_name, leavetype, desc, fromDate, toDate } = req.body;
 
     if (!emp_id) {
       return res.status(400).json({
@@ -23,6 +23,7 @@ exports.addLeave = async (req, res) => {
     const newLeave = new Leave({
       emp_id,
       emp_name,
+      desc,
       leavetype,
       fromDate,
       toDate,
@@ -65,7 +66,6 @@ exports.putLeave = async (req, res) => {
       { status },
       { new: true } // returns the updated document
     );
-
 
     if (!leave) {
       return res.status(404).json({ success: false, error: "Leave not found" });

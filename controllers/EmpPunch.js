@@ -1,7 +1,7 @@
 const Punch = require("../Models/PunchInModel");
 exports.PunchGet = async (req, res) => {
   try {
-    const punches = await Punch.find().sort({ createdAt: -1 }); // latest first
+    const punches = await Punch.find().sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: punches });
   } catch (error) {
     console.error("Error getting punches:", error);
@@ -9,7 +9,6 @@ exports.PunchGet = async (req, res) => {
   }
 };
 
-// 📅 Today's Attendance Summary
 exports.getTodayAttendanceSummary = async (req, res) => {
   try {
     const todayStart = new Date();
@@ -20,7 +19,6 @@ exports.getTodayAttendanceSummary = async (req, res) => {
     const punches = await Punch.find({
       PunchIn: { $gte: todayStart, $lte: todayEnd },
     });
-
     const presentSet = new Set();
     punches.forEach((punch) => presentSet.add(punch.emp_id));
 
@@ -90,7 +88,12 @@ exports.PunchPost = async (req, res) => {
       });
     }
 
-    const punch = new Punch({ emp_id, emp_name, PunchIn: now });
+    const punch = new Punch({
+      emp_id,
+      emp_name,
+      PunchIn: now,
+      status: "Present",
+    });
     await punch.save();
 
     res.status(200).json({
@@ -246,7 +249,7 @@ exports.getCurrentPunchState = async (req, res) => {
       PunchIn: { $gte: todayStart, $lte: todayEnd },
     }).sort({ PunchIn: -1 });
 
-    let state = "not_punched_in"; // default state
+    let state = "not_punched_in";
     let data = null;
 
     if (punch) {
@@ -258,13 +261,13 @@ exports.getCurrentPunchState = async (req, res) => {
       };
 
       if (!punch.LunchStart) {
-        state = "punched_in"; // Show Lunch In button
+        state = "punched_in";
       } else if (punch.LunchStart && !punch.LunchEnd) {
-        state = "lunch_in"; // Show Lunch Out button
+        state = "lunch_in";
       } else if (punch.LunchStart && punch.LunchEnd && !punch.PunchOut) {
-        state = "lunch_out"; // Show Punch Out button
+        state = "lunch_out";
       } else if (punch.PunchOut) {
-        state = "punched_out"; // All done
+        state = "punched_out";
       }
     }
 
