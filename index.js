@@ -12,6 +12,7 @@ const projectRouter = require("./routes/ProjectRoute");
 const notificationRouter = require("./routes/notificationRoute");
 const { Server } = require("socket.io");
 const http = require("http");
+require("dotenv").config();
 
 connectToDatabase();
 const app = express();

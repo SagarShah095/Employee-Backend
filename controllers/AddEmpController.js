@@ -4,8 +4,7 @@ const path = require("path");
 const User = require("../Models/User");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
-
+const sendMail = require("./utils/sendMail");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -31,25 +30,23 @@ const getEmployees = async (req, res) => {
 };
 
 const changePassword = async (req, res) => {
-  const {currentPassword, newPassword } = req.body;
+  const { currentPassword, newPassword } = req.body;
   const { id } = req.params;
 
   try {
-    if ( !currentPassword || !newPassword) {
+    if (!currentPassword || !newPassword) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
 
-
-    const user = await AddEmployee.findOne({_id: id});
+    const user = await AddEmployee.findOne({ _id: id });
 
     if (!user) {
       return res
         .status(404)
         .json({ success: false, message: "User not linked to this employee" });
     }
-
 
     const isMatch = await bcryptjs.compare(currentPassword, user.Pass);
     if (!isMatch) {
@@ -71,8 +68,6 @@ const changePassword = async (req, res) => {
   }
 };
 
-
-
 const addEmployee = async (req, res) => {
   try {
     const {
@@ -89,7 +84,6 @@ const addEmployee = async (req, res) => {
       Role,
     } = req.body;
 
-    // Check for existing user (login system)
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -98,23 +92,21 @@ const addEmployee = async (req, res) => {
       });
     }
 
-    // Check for existing employee by email or emp_id
     const employeeExists = await AddEmployee.findOne({
       $or: [{ email }, { emp_id }],
     });
     if (employeeExists) {
       return res.status(400).json({
         success: false,
-        message: employeeExists.email === email
-          ? "Employee with this email already exists"
-          : "Employee ID already in use",
+        message:
+          employeeExists.email === email
+            ? "Employee with this email already exists"
+            : "Employee ID already in use",
       });
     }
 
-    // Hash password
     const hashPassword = await bcryptjs.hash(Pass, 10);
 
-    // Create new user (login)
     const newUser = new User({
       name: emp_name,
       email,
@@ -124,7 +116,6 @@ const addEmployee = async (req, res) => {
     });
     await newUser.save();
 
-    // Create new employee entry
     const newEmp = new AddEmployee({
       emp_name,
       email,
@@ -144,8 +135,24 @@ const addEmployee = async (req, res) => {
     newUser.employeeInfo = newEmp._id;
     await newUser.save();
 
-    // Email (optional)
-    // ... (nodemailer code)
+    const loginUrl = `${process.env.FRONTEND_URL}`;
+    await sendMail({
+      to: email,
+      subject: "Welcome to the Company!",
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5;">
+          <h2>Welcome, ${emp_name}!</h2>
+          <p>You have been successfully added to the employee system.</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Password:${Pass}</strong> (set by admin)</p>
+          <p>
+            You can log in here: <a href="https://employee-frontend-i28v.onrender.com/login" target="_blank" style="color: green;">Click to Login</a>
+          </p>
+          <br/>
+          <p>Best regards,<br/>HR Team</p>
+        </div>
+      `,
+    });
 
     return res.status(201).json({
       success: true,
@@ -162,8 +169,6 @@ const addEmployee = async (req, res) => {
   }
 };
 
-
-
 const getEmployee = async (req, res) => {
   try {
     const { id } = req.params;
@@ -173,7 +178,7 @@ const getEmployee = async (req, res) => {
       emp,
     });
   } catch (error) {
-    console.error("Error in getEmployee:", error); // helpful for debugging
+    console.error("Error in getEmployee:", error); 
     return res.status(500).json({
       success: false,
       message: "Get Employee server error",
@@ -204,7 +209,7 @@ const updateEmployee = async (req, res) => {
 };
 
 const deleteEmployee = async (req, res) => {
-  try { 
+  try {
     const { id } = req.params;
     await AddEmployee.findByIdAndDelete({ _id: id });
     return res.status(200).json({

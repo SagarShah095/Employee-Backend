@@ -38,6 +38,8 @@ const AddEmployeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  resetToken: String,
+  resetTokenExpiry: Date,
 });
 
 module.exports = mongoose.model("AddEmployee", AddEmployeSchema);
