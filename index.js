@@ -20,8 +20,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    // origin: "https://employee-frontend-i28v.onrender.com", // Frontend URL
-    origin: "http://localhost:5173",
+    origin: "https://employee-frontend-i28v.onrender.com", // Frontend URL
+    // origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -41,22 +41,22 @@ io.on("connection", (socket) => {
 // Make io accessible in routes
 app.set("io", io);
 
-// app.use(
-//   cors({
-//     origin: "https://employee-frontend-i28v.onrender.com",
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
 app.use(
   cors({
-    origin: "*",
+    origin: "https://employee-frontend-i28v.onrender.com",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+// app.use(
+//   cors({
+//     origin: "*",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//     allowedHeaders: ["Content-Type", "Authorization"],
+//   })
+// );
 app.use(express.json());
 app.use(express.static("public/uploads"));
 app.use("/api/auth", authRoutes);
