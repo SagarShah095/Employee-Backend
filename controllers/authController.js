@@ -98,7 +98,7 @@ const forgotPassword = async (req, res) => {
         .json({ success: false, message: "User not found" });
 
     const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetLink = `https://employee-frontend-i28v.onrender.com/reset-password/${resetToken}`;
 
     user.resetToken = resetToken;
     user.resetTokenExpiry = Date.now() + 3600000;

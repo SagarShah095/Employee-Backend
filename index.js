@@ -11,13 +11,13 @@ const punchRouter = require("./routes/PunchRouter");
 const projectRouter = require("./routes/ProjectRoute");
 const notificationRouter = require("./routes/notificationRoute");
 const { Server } = require("socket.io");
-const http = require("http");
+const https = require("https");
 require("dotenv").config();
 
 connectToDatabase();
 const app = express();
 
-const server = http.createServer(app);
+const server = https.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: "https://employee-frontend-i28v.onrender.com", // Frontend URL
