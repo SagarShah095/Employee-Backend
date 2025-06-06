@@ -27,11 +27,10 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  console.log("User connected", socket.id);
+
 
   socket.on("join", (userId) => {
     socket.join(userId);
-    console.log(`User ${userId} joined room`);
   });
 
   socket.on("disconnect", () => {
@@ -49,6 +48,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
 // app.use(
 //   cors({
 //     origin: "*",
