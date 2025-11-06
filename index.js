@@ -20,8 +20,8 @@ const app = express();
 const server = https.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://employee-frontend-i28v.onrender.com", // Frontend URL
-    // origin: "http://localhost:5173",
+    origin: "https://employee-frontend-i28v.onrender.com",
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 });
@@ -37,7 +37,6 @@ io.on("connection", (socket) => {
     console.log("User disconnected", socket.id);
   });
 });
-// Make io accessible in routes
 app.set("io", io);
 
 app.use(
@@ -49,14 +48,6 @@ app.use(
   })
 );
 
-// app.use(
-//   cors({
-//     origin: "*",
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
 app.use(express.json());
 app.use(express.static("public/uploads"));
 app.use("/api/auth", authRoutes);

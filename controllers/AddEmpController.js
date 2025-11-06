@@ -178,7 +178,7 @@ const getEmployee = async (req, res) => {
       emp,
     });
   } catch (error) {
-    console.error("Error in getEmployee:", error); 
+    console.error("Error in getEmployee:", error);
     return res.status(500).json({
       success: false,
       message: "Get Employee server error",
