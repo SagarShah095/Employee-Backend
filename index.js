@@ -39,9 +39,27 @@ io.on("connection", (socket) => {
 });
 app.set("io", io);
 
+const allowedOrigins = [
+  "https://employee-frontend-i28v.onrender.com",
+  "http://localhost:3000", // Common default for React/Vite
+  "http://localhost:5173", // Common default for Vite
+  "http://127.0.0.1:3000",
+];
+
+// Configure CORS to allow multiple origins
 app.use(
   cors({
-    origin: "https://employee-frontend-i28v.onrender.com",
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
